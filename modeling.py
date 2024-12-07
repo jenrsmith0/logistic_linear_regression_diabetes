@@ -90,15 +90,17 @@ if __name__ == '__main__':
 
     # Confusion Matrix
     cm = confusion_matrix(y_test, y_pred_test)
+    print(y_test.value_counts())
+    print(pd.DataFrame(data=y_pred_test).value_counts())
     
-    cm_matrix = pd.DataFrame(data=cm, columns=['Actual Positive:1', 'Actual Negative:0'],
-                            index=['Predict Positive:1', 'Predict Negative:0'])
+    cm_matrix = pd.DataFrame(data=cm, columns=['Predict Negative:0', 'Predict Positive:1'],
+                            index=['Actual Negative:0', 'Actual Positive:1'])
     heatmap = sns.heatmap(cm_matrix, annot=True, fmt='d', cmap='YlGnBu')
     fig = heatmap.get_figure()
     fig.savefig("confusion_matrix.png")
 
-    TP = cm[0,0]
-    TN = cm[1,1]
+    TN = cm[0,0]
+    TP = cm[1,1]
     FP = cm[0,1]
     FN = cm[1,0]
 
