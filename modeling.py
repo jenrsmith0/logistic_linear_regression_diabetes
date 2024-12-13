@@ -7,6 +7,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import category_encoders as ce
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import d2_absolute_error_score
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import root_mean_squared_error
 
 if __name__ == '__main__':
     dataset = pd.read_csv("diabetes_prediction_dataset.csv")
@@ -79,14 +85,19 @@ if __name__ == '__main__':
     x_train = encoding.fit_transform(x_train)
     x_test = encoding.transform(x_test)
 
+    # Logistic Regression
+
     logreg = LogisticRegression(solver = "liblinear", random_state = 0)
     logreg.fit(x_train, y_train)
 
     y_pred_test = logreg.predict(x_test)
-    print('Model accuracy score: {0:0.4f}'. format(accuracy_score(y_test, y_pred_test)))
+    print('Logistic Regression Model accuracy score: {0:0.4f}'. format(accuracy_score(y_test, y_pred_test)))
 
     y_pred_train = logreg.predict(x_train)
-    print('Model accuracy score: {0:0.4f}'. format(accuracy_score(y_train, y_pred_train)))
+    print('Logistic Regression Model accuracy score: {0:0.4f}'. format(accuracy_score(y_train, y_pred_train)))
+
+    scores = cross_val_score(logreg, x_train, y_train, cv = 5, scoring='accuracy')
+    print('Logistic Regression cross validation scores:{}'.format(scores))
 
     # Confusion Matrix
     cm = confusion_matrix(y_test, y_pred_test)
@@ -118,3 +129,19 @@ if __name__ == '__main__':
 
     f1_score = 2 * ((precision * sensitivity)/(precision + sensitivity))
     print('F1 Score : {0:0.4f}'.format(f1_score))
+
+    # Linear Regression
+    linreg = LinearRegression().fit(x_train, y_train)
+
+    y_pred_test = linreg.predict(x_test)
+    print('Linear Regression Model D2 absolute error score: {0:0.4f}'. format(d2_absolute_error_score(y_test, y_pred_test)))
+
+    y_pred_train = linreg.predict(x_train)
+    print('Linear Regression Model D2 absolute error score: {0:0.4f}'. format(d2_absolute_error_score(y_train, y_pred_train)))
+
+    scores = cross_val_score(linreg, x_train, y_train, cv = 5, scoring='d2_absolute_error_score')
+    print('Cross validation scores:{}'.format(scores))
+
+    print('Linear Regression Model mean absolute error score: {0:0.4f}'. format(mean_absolute_error(y_test, y_pred_test)))
+    print('Linear Regression Model mean squared error score: {0:0.4f}'.format(mean_squared_error(y_test, y_pred_test)))
+    print('Linear Regression Model root mean squared error score: {0:0.4f}'.format(root_mean_squared_error(y_test, y_pred_test)))
